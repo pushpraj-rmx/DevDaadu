@@ -1,7 +1,7 @@
 <?php
     include 'includes/header.php';
     $service_id = $_GET['id'];
-    $service = mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM tbl_service WHERE service_id = '$service_id'"));
+    $service = mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM tbl_products WHERE products_id = '$service_id'"));
     ?>
 
 <!DOCTYPE html>
@@ -12,7 +12,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
 
-    <title><?= $service['service_name'] ?> | Dev Daadu | INVESTMENT & INSURANCE CONSULTANTS</title>
+    <title><?= $service['products_name'] ?> | Dev Daadu | INVESTMENT & INSURANCE CONSULTANTS</title>
     <?php include 'includes/head.php' ?>
 
     <style>
@@ -34,7 +34,7 @@
             <div class="row mt-1">
                 <div class="col-12">
                     <div class="bread-bg">
-                        <img src="http://localhost/DevDaadu/panel/assets/img/<?= $service['service_banner_img'] ?>"
+                        <img src="http://localhost/DevDaadu/panel/assets/img/<?= $service['products_banner_img'] ?>"
                             alt="">
                     </div>
                 </div>
@@ -67,15 +67,14 @@
             <div class="col-xl-12">
                 <div class="section-title">
                     <h2 class="text-center service-heading">
-                        <?= $service['service_name'] ?>
+                        <?= $service['products_name'] ?>
                     </h2>
                     <hr>
                 </div>
                 <div class="service-page-content" ;>
                     <p>
-                        <?= $service['service_desc'] ?>
+                        <?= $service['products_desc'] ?>
                     </p>
-
                 </div>
             </div>
         </div>
@@ -137,7 +136,6 @@
             </div>
         </div>
     </div>
-
 
 
     <!-- Contact Section  -->

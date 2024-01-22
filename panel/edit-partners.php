@@ -5,20 +5,29 @@ include('db/config.php');
 $edit_id = $_GET['edit_rec'];
 if (isset($_POST['launch'])) {
 
-	$sm_name = $_POST['sm_name'];
-	$sm_link = $_POST['sm_link'];
+	$partner_desc = $_POST['partner_desc'];
+	$partner_img = $_POST['partner_img'];
 	$is_active = ($_POST['is_active'] != '' ? 1 : 2);
 
-	$query = mysqli_query($conn, "update tbl_sm
-    	                                             SET sm_name='$sm_name',
-													 sm_link='$sm_link',
-    	                                             is_active=$is_active where sm_id=$edit_id");
+	if (!empty($_FILES['partner_img']['name'])) {
+		$partner_img = 'img_' . rand(0, 1000) . '_' . $_FILES['partner_img']['name'];
+	} else {
+		$partner_img = $_POST['partner_img_hidden'];
+	}
+	$query = mysqli_query($conn, "update tbl_partners
+    	                                             SET partner_desc='$partner_desc',
+													 partner_img='$partner_img',
+    	                                             is_active=$is_active where partner_id=$edit_id");
 
 	if ($query) {
-		header('Location:manage-social-media.php');
+		if (!empty($_FILES['partner_img']['name'])) {
+			move_uploaded_file($_FILES['partner_img']['tmp_name'], 'assets/img/' . $partner_img . '');
+			unlink('assets/img/' . $_POST['partner_img_hidden']);
+		}
+		header('Location:manage-partners.php');
 	}
 }
-$row = mysqli_fetch_array(mysqli_query($conn, "select * from tbl_sm where sm_id=$edit_id"));
+$details = mysqli_fetch_array(mysqli_query($conn, "select * from tbl_partners where partner_id=$edit_id"));
 ?>
 
 <!DOCTYPE html>
@@ -93,7 +102,7 @@ $row = mysqli_fetch_array(mysqli_query($conn, "select * from tbl_sm where sm_id=
                                                     <div class="card-header">
 
                                                         <div class="card-title">
-                                                            <h2 class="fw-bolder">Edit Social Media</h2>
+                                                            <h2 class="fw-bolder">Edit Partners</h2>
                                                         </div>
 
                                                     </div>
@@ -101,36 +110,61 @@ $row = mysqli_fetch_array(mysqli_query($conn, "select * from tbl_sm where sm_id=
                                                         <div class="d-flex flex-column mb-15 fv-row">
                                                             <div class="table-responsive">
                                                                 <!--begin::Table-->
+
+
                                                                 <table id="kt_create_new_custom_fields"
                                                                     class="table align-middle table-row-dashed fw-bold fs-6 gy-5">
                                                                     <!--begin::Table head-->
                                                                     <thead>
                                                                         <tr
                                                                             class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
-                                                                            <th class="pt-0">Name</th>
-                                                                            <th class="pt-0">Link</th>
+                                                                            <th class="pt-0">Partners Banner Image</th>
+
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
                                                                         <tr>
                                                                             <td>
-                                                                                <input type="text"
+                                                                                <input type="file"
                                                                                     class="form-control form-control-solid"
-                                                                                    name="sm_name"
-                                                                                    value="<?= $row['sm_name'] ?>" />
+                                                                                    value="" name="partner_img" />
+                                                                                <?php if (!empty($details['partner_img'])) { ?>
+                                                                                <img src="<?= BASE_URL ?>assets/img/<?= $details['partner_img'] ?>"
+                                                                                    width='50' class="mt-3">
+                                                                                <?php } ?>
+                                                                                <input type="hidden"
+                                                                                    name="partner_img_hidden"
+                                                                                    value="<?= $details['partner_img'] ?>">
                                                                             </td>
-                                                                            <td>
-                                                                                <input type="text"
-                                                                                    class="form-control form-control-solid"
-                                                                                    name="sm_link"
-                                                                                    value="<?= $row['sm_link'] ?>" />
-                                                                            </td>
+
+
 
                                                                         </tr>
                                                                     </tbody>
                                                                     <!--end::Table body-->
                                                                 </table>
 
+                                                                <table id="kt_create_new_custom_fields"
+                                                                    class="table align-middle table-row-dashed fw-bold fs-6 gy-5">
+                                                                    <!--begin::Table head-->
+                                                                    <thead>
+                                                                        <tr
+                                                                            class="text-start text-muted fw-bolder fs-7 text-uppercase gs-0">
+                                                                            <th class="pt-0">Partners Page Content</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td>
+
+                                                                                <textarea name="partner_desc"
+                                                                                    id="default"><?= $details['partner_desc'] ?></textarea>
+                                                                            </td>
+
+                                                                        </tr>
+                                                                    </tbody>
+                                                                    <!--end::Table body-->
+                                                                </table>
                                                             </div>
                                                         </div>
                                                         <div class="d-flex flex-stack mb-8">
@@ -152,7 +186,7 @@ $row = mysqli_fetch_array(mysqli_query($conn, "select * from tbl_sm where sm_id=
                                                         </div>
                                                         <button type="submit" name="launch" style="width: 100%;"
                                                             id="kt_modal" class="btn text-center btn-primary">
-                                                            <span class="indicator-label">Update Social Media</span>
+                                                            <span class="indicator-label">Update products</span>
                                                             </span>
                                                         </button>
 
